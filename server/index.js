@@ -1,30 +1,37 @@
-import express from 'express'
-import dotenv from 'dotenv'
-import mongoose from 'mongoose'
-import cors from 'cors'
-import { join, dirname } from 'path';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
+import { existsSync } from 'fs';
+import mongoose from 'mongoose';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
-import uploadRoutes from './routes/upload.js'
-import authRoutes from './routes/auth.js'
-import userRoutes from './routes/user.js'
-import notificationRoutes from './routes/notification.js'
-import saleRoutes from './routes/sale.js'
-import taskRoutes from './routes/task.js'
-import eventRoutes from './routes/event.js'
-import approvalRoutes from './routes/approval.js'
-import leadRoutes from './routes/lead.js'
-import followUpRoutes from './routes/followUp.js'
-import cashbookRoutes from './routes/cashbook.js'
-import refundRoutes from './routes/refund.js'
-import voucherRoutes from './routes/voucher.js'
-import deductionRoutes from './routes/deduction.js'
-import transcriptRoutes from './routes/transcript.js'
-import projectRoutes from './routes/project.js'
-import societyRoutes from './routes/society.js'
-import inventoryRoutes from './routes/inventory.js'
+import approvalRoutes from './routes/approval.js';
+import authRoutes from './routes/auth.js';
+import cashbookRoutes from './routes/cashbook.js';
+import deductionRoutes from './routes/deduction.js';
+import eventRoutes from './routes/event.js';
+import followUpRoutes from './routes/followUp.js';
+import inventoryRoutes from './routes/inventory.js';
+import leadRoutes from './routes/lead.js';
+import notificationRoutes from './routes/notification.js';
+import projectRoutes from './routes/project.js';
+import refundRoutes from './routes/refund.js';
+import saleRoutes from './routes/sale.js';
+import societyRoutes from './routes/society.js';
+import taskRoutes from './routes/task.js';
+import transcriptRoutes from './routes/transcript.js';
+import uploadRoutes from './routes/upload.js';
+import userRoutes from './routes/user.js';
+import voucherRoutes from './routes/voucher.js';
 
-dotenv.config()
+// Load environment variables with priority: .env.local > .env
+if (existsSync('.env.local')) {
+    dotenv.config({ path: '.env.local' })
+} else {
+    dotenv.config()
+}
+
 const app = express()
 const CONNECTION_URL = process.env.ATLAS_URL
 // const CONNECTION_URL = process.env.COMPASS_URL
