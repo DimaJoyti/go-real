@@ -1,6 +1,6 @@
 import axios from 'axios'
-import { baseURL } from '../../constant'
 import Cookie from 'js-cookie'
+import { baseURL } from '../../constant'
 
 
 const API = axios.create({ baseURL })
@@ -9,7 +9,11 @@ API.interceptors.request.use((req) => {
     const profileString = Cookie.get(`crm_profile`)
     if (profileString) {
         const profile = JSON.parse(profileString)
-        req.headers.authtoken = profile.token
+        if (profile.token) {
+            req.headers.authtoken = profile.token
+        } else {
+            console.warn('No token found in user profile. Please log in again.')
+        }
     }
     return req
 })

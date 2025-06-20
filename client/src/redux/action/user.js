@@ -1,7 +1,7 @@
+import Cookies from 'js-cookie'
 import toast from 'react-hot-toast'
 import * as api from '../api'
-import { start, end, error, registerReducer, loginReducer, logoutReducer, getUserReducer, getClientsReducer, getUsersReducer, getEmployeesReducer, createClientReducer, createEmployeeReducer, updateUserReducer, deleteUserReducer, } from '../reducer/user'
-import Cookies from 'js-cookie'
+import { createClientReducer, createEmployeeReducer, deleteUserReducer, end, error, getClientsReducer, getEmployeesReducer, getUserReducer, getUsersReducer, loginReducer, logoutReducer, registerReducer, start, updateUserReducer, } from '../reducer/user'
 
 export const register = (userData, navigate) => async (dispatch) => {
     try {
@@ -20,9 +20,10 @@ export const login = (userData, navigate) => async (dispatch) => {
     try {
         dispatch(start())
         const { data } = await api.login(userData)
-        const { token, ...result } = data.result
+        // Store the complete user data including token in cookies
         Cookies.set('crm_profile', JSON.stringify(data.result))
-        dispatch(loginReducer(result))
+        // Dispatch the complete user data to the reducer
+        dispatch(loginReducer(data.result))
         navigate('/')
         dispatch(end())
     } catch (err) {
