@@ -19,3 +19,5 @@ npm-debug.log*
 # Database
 *.db
 *.sqlite
+client/.next/cache/webpack
+client/.next/server
