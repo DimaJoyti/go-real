@@ -7,7 +7,7 @@ import { deleteAllImagesReducer } from "../../../redux/reducer/upload";
 import { Loader, Upload } from "../../../utils";
 import { PiImages, PiNotepad, PiUser, PiXLight } from "react-icons/pi";
 import { Divider, Dialog, DialogContent, DialogTitle, Slide } from "@mui/material";
-import { pakistanCities } from "../../../constant";
+import { pakistanCities } from "../../../constants";
 import { CFormSelect } from "@coreui/react";
 
 const Transition = React.forwardRef(function Transition(props, ref) {

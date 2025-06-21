@@ -1,6 +1,6 @@
 import axios from 'axios'
 import Cookie from 'js-cookie'
-import { baseURL } from '../../constant'
+import { baseURL } from '../../constants'
 
 
 const API = axios.create({ baseURL })

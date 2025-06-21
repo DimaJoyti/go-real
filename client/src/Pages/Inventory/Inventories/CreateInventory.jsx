@@ -17,7 +17,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { PiImages, PiNotepad, PiUser, PiXLight } from "react-icons/pi";
-import { pakistanCities } from "../../../constant";
+import { pakistanCities } from "../../../constants";
 import { Loader } from "../../../utils";
 
 const Transition = React.forwardRef(function Transition(props, ref) {

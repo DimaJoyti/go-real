@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-import { Drawer, TextField, Autocomplete, Select, MenuItem } from "@mui/material";
-import { PiFunnelLight, PiXLight } from "react-icons/pi";
-import { pakistanCities } from "../../../constant";
+import { Autocomplete, Drawer, TextField } from "@mui/material";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { countries } from "../../../constant";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { useState } from "react";
+import { PiFunnelLight, PiXLight } from "react-icons/pi";
+import { countries, pakistanCities } from "../../../constants";
 
 const Filter = ({ open, setOpen }) => {
 

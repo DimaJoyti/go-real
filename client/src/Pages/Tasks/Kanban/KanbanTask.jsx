@@ -1,13 +1,12 @@
-import React from 'react';
-import { Alarm, Archive, LinkOff, LinkOutlined, Message, Person } from '@mui/icons-material';
-import { Avatar, Link, Tooltip } from '@mui/material';
+import { Archive, LinkOutlined, Person } from '@mui/icons-material';
+import { Avatar, Tooltip } from '@mui/material';
 import { Draggable } from 'react-beautiful-dnd';
-import { person1 } from '../../../assets';
 import { Check2Square } from 'react-bootstrap-icons';
-import { updateTask } from '../../../redux/action/task'
-import { format } from 'timeago.js'
-import { rootURL } from '../../../constant';
 import { useDispatch } from 'react-redux';
+import { format } from 'timeago.js';
+import { person1 } from '../../../assets';
+import { rootURL } from '../../../constants';
+import { updateTask } from '../../../redux/action/task';
 
 
 const Task = ({ task, index, }) => {

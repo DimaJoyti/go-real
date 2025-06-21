@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getLead, updateLead } from "../../redux/action/lead";
-import { pakistanCities, countries } from "../../constant";
+import { pakistanCities, countries } from "../../constants";
 import {
   Divider,
   Dialog,

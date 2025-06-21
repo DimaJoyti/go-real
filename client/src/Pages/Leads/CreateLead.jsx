@@ -5,7 +5,7 @@ import { createLead, getLeads } from "../../redux/action/lead";
 import Topbar from "./Topbar";
 import { register } from "../../redux/action/user";
 import { CFormSelect } from "@coreui/react";
-import { pakistanCities, countries } from "../../constant";
+import { pakistanCities, countries } from "../../constants";
 import {
   Divider,
   Dialog,

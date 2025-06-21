@@ -1,26 +1,22 @@
-import React, { useEffect, useRef, useState } from "react";
+import {
+    Checkbox,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    FormControlLabel,
+    FormGroup,
+    Slide,
+    TextField
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { PiUser, PiXLight } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
-import { createSociety } from "../../../redux/action/society";
-import { CheckBox, Clear, UploadFile } from "@mui/icons-material";
-import FileBase from "react-file-base64";
 import { useNavigate } from "react-router-dom";
+import { createSociety } from "../../../redux/action/society";
 import { deleteAllImagesReducer } from "../../../redux/reducer/upload";
 import { Upload } from "../../../utils";
-import {
-  Divider,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Slide,
-  DialogActions,
-  TextField,
-  Autocomplete,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-} from "@mui/material";
-import { PiImages, PiNotepad, PiUser, PiXLight } from "react-icons/pi";
-import { pakistanCities } from "../../../constant";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { register } from "../../redux/action/user";
 import validator from "email-validator";
 import { PiEyeSlashThin, PiEyeThin } from "react-icons/pi";
-import { pakistanCities } from "../../constant";
+import { pakistanCities } from "../../constants";
 import toast from "react-hot-toast";
 
 const Signup = () => {

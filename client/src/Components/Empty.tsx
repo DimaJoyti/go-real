@@ -1,5 +1,3 @@
-import React from 'react'
-
 const Empty = () => {
     return (
         <div className='w-full flex flex-col justify-center items-center grayscale py-12 '>

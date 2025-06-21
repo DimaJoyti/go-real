@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import { PiImages, PiNotepad, PiUser, PiXLight } from "react-icons/pi";
 import { CFormSelect } from "@coreui/react";
-import { pakistanCities } from "../../../constant";
+import { pakistanCities } from "../../../constants";
 import { getSocieties } from "../../../redux/action/society";
 
 const Transition = React.forwardRef(function Transition(props, ref) {

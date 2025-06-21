@@ -27,3 +27,5 @@ CLAUDE.md
 .cursor
 .kilocode
 client/.next
+client/.next/cache/webpack
+client/.next/server
