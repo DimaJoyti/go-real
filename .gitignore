@@ -21,3 +21,9 @@ npm-debug.log*
 *.sqlite
 .augment-guidelines
 promt.md
+supabase/.env.example
+CLAUDE.md
+.claude
+.cursor
+.kilocode
+client/.next

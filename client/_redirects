@@ -1,0 +1,14 @@
+# Cloudflare Pages Redirects Configuration
+
+# API redirects to Cloudflare Workers
+/api/workers/* https://goreal-workers.your-subdomain.workers.dev/api/:splat 200
+/api/cached/* https://goreal-workers.your-subdomain.workers.dev/api/proxy/:splat 200
+
+# WebSocket connections
+/ws/* wss://goreal-workers.your-subdomain.workers.dev/:splat 200
+
+# Fallback for Go backend (direct connection)
+/api/go/* http://localhost:8080/api/:splat 200
+
+# SPA fallback - serve index.html for all routes that don't match files
+/* /index.html 200

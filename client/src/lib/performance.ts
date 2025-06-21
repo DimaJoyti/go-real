@@ -67,14 +67,16 @@ export function memoize<T extends (...args: any[]) => any>(
 export function createLazyComponent<T extends React.ComponentType<any>>(
   importFunc: () => Promise<{ default: T }>,
   fallback?: React.ComponentType
-) {
+): React.ComponentType<React.ComponentProps<T>> {
   const LazyComponent = React.lazy(importFunc)
   
-  return (props: React.ComponentProps<T>) => (
-    <React.Suspense fallback={fallback ? React.createElement(fallback) : <div>Loading...</div>}>
-      <LazyComponent {...props} />
-    </React.Suspense>
-  )
+  return (props: React.ComponentProps<T>) => {
+    return React.createElement(
+      React.Suspense,
+      { fallback: fallback ? React.createElement(fallback) : React.createElement('div', null, 'Loading...') },
+      React.createElement(LazyComponent, props)
+    )
+  }
 }
 
 /**
@@ -333,7 +335,7 @@ export class PerformanceMonitor {
     new PerformanceObserver((list) => {
       const entries = list.getEntries()
       entries.forEach((entry) => {
-        console.log('FID:', entry.processingStart - entry.startTime)
+        console.log('FID:', (entry as any).processingStart - entry.startTime)
       })
     }).observe({ entryTypes: ['first-input'] })
 
@@ -342,8 +344,8 @@ export class PerformanceMonitor {
       let clsValue = 0
       const entries = list.getEntries()
       entries.forEach((entry) => {
-        if (!entry.hadRecentInput) {
-          clsValue += entry.value
+        if (!(entry as any).hadRecentInput) {
+          clsValue += (entry as any).value
         }
       })
       console.log('CLS:', clsValue)

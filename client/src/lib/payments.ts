@@ -82,12 +82,20 @@ export async function confirmPayment(
       throw new Error('Stripe not initialized')
     }
 
-    const result = await stripe.confirmPayment({
-      clientSecret,
-      confirmParams: paymentMethodId ? {
-        payment_method: paymentMethodId
-      } : undefined,
-    })
+    const result = paymentMethodId 
+      ? await stripe.confirmPayment({
+          clientSecret,
+          confirmParams: {
+            payment_method: paymentMethodId,
+            return_url: `${window.location.origin}/payment/success`
+          }
+        })
+      : await stripe.confirmPayment({
+          clientSecret,
+          confirmParams: {
+            return_url: `${window.location.origin}/payment/success`
+          }
+        })
 
     if (result.error) {
       return {

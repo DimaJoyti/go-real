@@ -1,0 +1,9 @@
+name = "goreal-workers"
+main = "src/index.ts"
+compatibility_date = "2024-12-18"
+compatibility_flags = ["nodejs_compat"]
+
+# Environment Variables
+[vars]
+ENVIRONMENT = "development"
+GO_BACKEND_URL = "http://localhost:8080"

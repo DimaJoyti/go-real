@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import { createSupabaseServerClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
+  apiVersion: '2025-02-24.acacia',
 })
 
 export async function POST(request: NextRequest) {
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user from session
-    const supabase = createSupabaseServerClient()
+    // const supabase = createSupabaseServerClient() // TODO: Implement server client
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {

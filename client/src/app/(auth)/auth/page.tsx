@@ -36,7 +36,7 @@ export default function AuthPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-challenz-50/20 to-nft-50/20 p-4">
       <div className="w-full max-w-md">
         <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-8 shadow-lg">
-          <AuthForm mode={mode} onToggleMode={handleToggleMode} />
+          <AuthForm mode={mode} />
         </div>
       </div>
     </div>

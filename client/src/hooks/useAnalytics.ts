@@ -217,7 +217,12 @@ export function useAnalytics(timeRange: '7d' | '30d' | '90d' | '1y' = '30d') {
       totalParticipants: participants.count || 0,
       averageParticipants: total.count ? (participants.count || 0) / total.count : 0,
       topCategories,
-      recentActivity: recent.data || []
+      recentActivity: (recent.data || []).map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        participants: item.current_participants || 0,
+        created_at: item.created_at
+      }))
     }
   }
 
@@ -327,9 +332,9 @@ export function useAnalytics(timeRange: '7d' | '30d' | '90d' | '1y' = '30d') {
       totalSales: sales.count || 0,
       averagePrice: sales.count ? totalSalesAmount / sales.count : 0,
       topPropertyTypes,
-      recentSales: recentSales.data?.map(sale => ({
-        id: sale.nft?.id || '',
-        name: sale.nft?.name || 'Unknown',
+      recentSales: recentSales.data?.map((sale: any) => ({
+        id: sale.nft?.id || sale.id || '',
+        name: sale.nft?.name || 'Unknown Property',
         price: sale.amount,
         sold_at: sale.created_at
       })) || []
