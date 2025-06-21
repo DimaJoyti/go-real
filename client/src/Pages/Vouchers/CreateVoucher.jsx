@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { PiNotepad, PiXLight } from "react-icons/pi";
 import { CFormSelect } from "@coreui/react";
-import { countries } from "../../constant";
+import { countries } from "../../constants";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;

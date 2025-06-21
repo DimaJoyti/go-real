@@ -1,21 +1,21 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import uploadReducer from './reducer/upload';
 import approvalReducer from './reducer/approval';
-import eventReducer from './reducer/event';
-import notificationReducer from './reducer/notification';
-import userReducer from './reducer/user'; // Corrected import name
-import taskReducer from './reducer/task';
-import saleReducer from './reducer/sale';
-import leadReducer from './reducer/lead';
-import followUpReducer from './reducer/followUp';
-import refundReducer from './reducer/refund';
 import cashbookReducer from './reducer/cashbook';
-import voucherReducer from './reducer/voucher';
 import deductionReducer from './reducer/deduction';
-import transcriptReducer from './reducer/transcript';
-import societyReducer from './reducer/society';
-import projectReducer from './reducer/project';
+import eventReducer from './reducer/event';
+import followUpReducer from './reducer/followUp';
 import inventoryReducer from './reducer/inventory';
+import leadReducer from './reducer/lead';
+import notificationReducer from './reducer/notification';
+import projectReducer from './reducer/project';
+import refundReducer from './reducer/refund';
+import saleReducer from './reducer/sale';
+import societyReducer from './reducer/society';
+import taskReducer from './reducer/task';
+import transcriptReducer from './reducer/transcript';
+import uploadReducer from './reducer/upload';
+import userReducer from './reducer/user'; // Corrected import name
+import voucherReducer from './reducer/voucher';
 
 const rootReducer = combineReducers({
     upload: uploadReducer,
@@ -41,3 +41,7 @@ export const store = configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false })
 })
+
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch

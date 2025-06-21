@@ -1,5 +1,44 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
+
+// Types
+export interface User {
+    _id: string;
+    uid: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+    phone: string;
+    role: 'client' | 'employee' | 'manager' | 'admin';
+    city?: string;
+    CNIC?: string;
+    martialStatus?: string;
+    gender?: string;
+    salaryType?: string;
+    [key: string]: any; // Allow indexing for dynamic property access
+}
+
+export interface UserState {
+    isFetching: boolean;
+    error: string | null;
+    users: User[];
+    allUsers: User[];
+    allClients: User[];
+    allEmployees: User[];
+    employees: User[];
+    clients: User[];
+    currentEmployee: User | null;
+    loggedUser: User | null;
+}
+
+export interface FilterOptions {
+    city?: string;
+    martialStatus?: string;
+    gender?: string;
+    salaryType?: string;
+    [key: string]: any;
+}
 
 const usersSlice = createSlice({
     name: 'user',
@@ -105,30 +144,31 @@ const usersSlice = createSlice({
             }
         ],
         currentEmployee: null,
-        loggedUser: Cookies.get('crm_profile') ? JSON.parse(Cookies.get('crm_profile')) : {
+        loggedUser: Cookies.get('crm_profile') ? JSON.parse(Cookies.get('crm_profile') as string) : {
             _id: "mock_user_id",
+            uid: "DEMO001",
             username: "demo_admin",
             firstName: "Demo",
             lastName: "Admin",
             email: "demo@example.com",
-            role: "manager",
+            role: "manager" as const,
             phone: "1234567890"
         }
-    },
+    } as UserState,
     reducers: {
-        start: (state) => { state.isFetching = true; state.error = null; },
-        end: (state) => { state.isFetching = false },
-        error: (state, action) => { state.isFetching = false; state.error = action.payload; },
+        start: (state: UserState) => { state.isFetching = true; state.error = null; },
+        end: (state: UserState) => { state.isFetching = false },
+        error: (state: UserState, action: PayloadAction<string>) => { state.isFetching = false; state.error = action.payload; },
 
-        registerReducer: (state, action) => { state.clients = [action.payload, ...state.clients] },
-        loginReducer: (state, action) => { state.loggedUser = action.payload },
-        logoutReducer: (state) => { state.loggedUser = null },
+        registerReducer: (state: UserState, action: PayloadAction<User>) => { state.clients = [action.payload, ...state.clients] },
+        loginReducer: (state: UserState, action: PayloadAction<User>) => { state.loggedUser = action.payload },
+        logoutReducer: (state: UserState) => { state.loggedUser = null },
 
-        getUsersReducer: (state, action) => { state.users = action.payload; state.allUsers = action.payload },
-        getEmployeesReducer: (state, action) => { state.employees = action.payload; state.allEmployees = action.payload },
-        getClientsReducer: (state, action) => { state.clients = action.payload; state.allClients = action.payload },
-        getUserReducer: (state, action) => { state.currentEmployee = action.payload },
-        searchUserReducer: (state, action) => {
+        getUsersReducer: (state: UserState, action: PayloadAction<User[]>) => { state.users = action.payload; state.allUsers = action.payload },
+        getEmployeesReducer: (state: UserState, action: PayloadAction<User[]>) => { state.employees = action.payload; state.allEmployees = action.payload },
+        getClientsReducer: (state: UserState, action: PayloadAction<User[]>) => { state.clients = action.payload; state.allClients = action.payload },
+        getUserReducer: (state: UserState, action: PayloadAction<User>) => { state.currentEmployee = action.payload },
+        searchUserReducer: (state: UserState, action: PayloadAction<string>) => {
             const { allUsers } = state;
             const { payload: searchTerm } = action;
 
@@ -147,7 +187,7 @@ const usersSlice = createSlice({
             });
             state.users = searchedUsers;
         },
-        searchEmployeeReducer: (state, action) => {
+        searchEmployeeReducer: (state: UserState, action: PayloadAction<string>) => {
             const { allEmployees } = state;
             const { payload: searchTerm } = action;
 
@@ -166,7 +206,7 @@ const usersSlice = createSlice({
             });
             state.employees = searchedUsers;
         },
-        searchClientReducer: (state, action) => {
+        searchClientReducer: (state: UserState, action: PayloadAction<string>) => {
             const { allClients } = state;
             const { payload: searchTerm } = action;
 
@@ -185,7 +225,7 @@ const usersSlice = createSlice({
             });
             state.clients = searchedUsers;
         },
-        filterUserReducer: (state, action) => {
+        filterUserReducer: (state: UserState, action: PayloadAction<FilterOptions>) => {
             const { allUsers } = state;
             const { payload: filters } = action;
 
@@ -208,21 +248,21 @@ const usersSlice = createSlice({
 
             state.users = filteredUsers;
         },
-        filterEmployeeReducer: (state, action) => {
+        filterEmployeeReducer: (state: UserState, action: PayloadAction<FilterOptions>) => {
             const { allEmployees } = state;
             const { payload: filters } = action;
 
             const filteredEmployees = allEmployees.filter((employee) => {
-                if (filters.city && employee.city.toLowerCase() != filters.city.toLowerCase()) return false;
-                if (filters.martialStatus && employee.martialStatus.toLowerCase() != filters.martialStatus.toLowerCase()) return false;
-                if (filters.gender && employee.gender.toLowerCase() != filters.gender.toLowerCase()) return false;
-                if (filters.salaryType && employee?.salaryType.toLowerCase() != filters?.salaryType.toLowerCase()) return false;
+                if (filters.city && employee.city?.toLowerCase() !== filters.city.toLowerCase()) return false;
+                if (filters.martialStatus && employee.martialStatus?.toLowerCase() !== filters.martialStatus.toLowerCase()) return false;
+                if (filters.gender && employee.gender?.toLowerCase() !== filters.gender.toLowerCase()) return false;
+                if (filters.salaryType && employee?.salaryType?.toLowerCase() !== filters?.salaryType.toLowerCase()) return false;
                 return true;
             });
 
             state.employees = filteredEmployees;
         },
-        filterClientReducer: (state, action) => {
+        filterClientReducer: (state: UserState, action: PayloadAction<FilterOptions>) => {
             const { allClients } = state;
             const { payload: filters } = action;
 
@@ -246,28 +286,28 @@ const usersSlice = createSlice({
             state.clients = filteredUsers;
         },
 
-        createClientReducer: (state, action) => { state.clients = [action.payload, ...state.clients] },
-        createEmployeeReducer: (state, action) => { state.employees = [action.payload, ...state.employees] },
+        createClientReducer: (state: UserState, action: PayloadAction<User>) => { state.clients = [action.payload, ...state.clients] },
+        createEmployeeReducer: (state: UserState, action: PayloadAction<User>) => { state.employees = [action.payload, ...state.employees] },
 
-        updateUserReducer: (state, action) => {
+        updateUserReducer: (state: UserState, action: PayloadAction<User>) => {
             switch (action.payload.role) {
                 case 'client':
-                    state.clients = state.clients.map(c => c = c._id == action.payload._id ? action.payload : c)
+                    state.clients = state.clients.map(c => c._id === action.payload._id ? action.payload : c)
                     break;
                 case 'employee':
-                    state.employees = state.employees.map(e => e = e._id == action.payload._id ? action.payload : e)
+                    state.employees = state.employees.map(e => e._id === action.payload._id ? action.payload : e)
                     break;
                 default:
                     break;
             }
         },
-        deleteUserReducer: (state, action) => {
+        deleteUserReducer: (state: UserState, action: PayloadAction<User>) => {
             switch (action.payload.role) {
                 case 'client':
-                    state.clients = state.clients.filter(c => c._id != action.payload._id)
+                    state.clients = state.clients.filter(c => c._id !== action.payload._id)
                     break;
                 case 'employee':
-                    state.employees = state.employees.filter(e => e._id != action.payload._id)
+                    state.employees = state.employees.filter(e => e._id !== action.payload._id)
                     break;
                 default:
                     break;

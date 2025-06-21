@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Drawer, TextField, Autocomplete } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { PiFunnelLight, PiXLight } from "react-icons/pi";
-import { pakistanCities } from "../../../constant";
-import { DatePicker, DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { Autocomplete, Drawer, TextField } from "@mui/material";
+import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { useEffect, useState } from "react";
+import { PiFunnelLight, PiXLight } from "react-icons/pi";
+import { useDispatch, useSelector } from "react-redux";
+import { pakistanCities } from "../../../constants";
 import { getSocieties } from "../../../redux/action/society";
-import { Loader } from "../../../utils";
 import { filterProjectReducer } from "../../../redux/reducer/project";
 
 const ProjectFilter = ({ open, setOpen, isFiltered, setIsFiltered }) => {

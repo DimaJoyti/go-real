@@ -1,28 +1,47 @@
-import { Avatar, Divider, IconButton, Tooltip } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Dropdown } from "@mui/base/Dropdown";
 import { Menu } from "@mui/base/Menu";
-import { MenuItem, menuItemClasses } from "@mui/base/MenuItem";
-import { styled } from "@mui/system";
 import { MenuButton } from "@mui/base/MenuButton";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import React from "react";
-import { logout } from "../../redux/action/user";
+import { MenuItem, menuItemClasses } from "@mui/base/MenuItem";
+import { Avatar, Divider, IconButton, Tooltip } from "@mui/material";
+import { styled } from "@mui/system";
+import React, { useEffect, useState } from "react";
 import {
-  PiAlarm,
-  PiBell,
-  PiGear,
-  PiKeyLight,
-  PiList,
-  PiListChecks,
-  PiSignOutLight,
-  PiTimerLight,
-  PiUserPlus,
+    PiAlarm,
+    PiBell,
+    PiKeyLight,
+    PiList,
+    PiListChecks,
+    PiSignOutLight,
+    PiTimerLight,
+    PiUserPlus
 } from "react-icons/pi";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import ChangePassword from "../../Pages/Auth/ChangePassword";
 import { getNotifications } from "../../redux/action/notification";
 import { getTasks } from "../../redux/action/task";
-import ChangePassword from "../../Pages/Auth/ChangePassword";
+import { logout } from "../../redux/action/user";
+import type { RootState } from "../../redux/store";
+
+// Types
+interface NavbarProps {
+  setShowSidebar: React.Dispatch<React.SetStateAction<boolean>>;
+  showSidebar: boolean;
+  open?: boolean;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+interface Notification {
+  title: string;
+  description: string;
+  [key: string]: any;
+}
+
+interface Task {
+  title: string;
+  description: string;
+  [key: string]: any;
+}
 
 const blue = {
   100: "#DAECFF",
@@ -94,19 +113,19 @@ const StyledMenuItem = styled(MenuItem)(
     `
 );
 
-const Navbar = ({ setShowSidebar, showSidebar, open, setOpen }) => {
+const Navbar: React.FC<NavbarProps> = ({ setShowSidebar, showSidebar, open, setOpen }) => {
   /////////////////////////////////////////// VARIABLES ////////////////////////////////////////////
-  const { loggedUser } = useSelector((state) => state.user);
-  const { notifications } = useSelector((state) => state.notification);
+  const { loggedUser } = useSelector((state: RootState) => state.user);
+  const { notifications } = useSelector((state: RootState) => state.notification);
   const { pathname } = useLocation();
-  const { tasks } = useSelector((state) => state.task);
+  const { tasks } = useSelector((state: RootState) => state.task);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   /////////////////////////////////////////// STATES ////////////////////////////////////////////////
-  const [date, setDate] = useState(new Date());
-  const [openPasswordChange, setOpenPasswordChange] = useState(false);
-  const [timezone, setTimezone] = useState('');
+  const [date, setDate] = useState<Date>(new Date());
+  const [openPasswordChange, setOpenPasswordChange] = useState<boolean>(false);
+  const [timezone, setTimezone] = useState<string>('');
 
   /////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////
   useEffect(() => {
@@ -146,9 +165,7 @@ const Navbar = ({ setShowSidebar, showSidebar, open, setOpen }) => {
           <div className={`flex justify-start gap-[10px] items-center`}>
             <IconButton
               onClick={() => setShowSidebar((pre) => !pre)}
-              className={`md:hidden flex cursor-pointer hover:text-sky-400 ${pathname.includes(
-                "/settings" ? "hidden" : ""
-              )}`}>
+              className={`md:hidden flex cursor-pointer hover:text-sky-400 ${pathname.includes("/settings") ? "hidden" : ""}`}>
               <PiList className="text-[25px]" />
             </IconButton>
             <div>
@@ -171,7 +188,7 @@ const Navbar = ({ setShowSidebar, showSidebar, open, setOpen }) => {
 
               {/* Notification */}
               {
-                loggedUser.role != 'employee' &&
+                loggedUser?.role !== 'employee' &&
                 <Dropdown>
                   <MenuButton>
                     <Tooltip title="Notifications" arrow placement="bottom">
@@ -195,7 +212,7 @@ const Navbar = ({ setShowSidebar, showSidebar, open, setOpen }) => {
                         <div className="w-full bg-sky-400 font-primary text-2xl text-white p-4">
                           Notifications
                         </div>
-                        {notifications.slice(0, 5).map((notification, index) => (
+                        {notifications.slice(0, 5).map((notification: Notification, index: number) => (
                           <React.Fragment key={index}>
                             <StyledMenuItem
                               onClick={() => navigate("/authorization/refund")}
@@ -241,7 +258,7 @@ const Navbar = ({ setShowSidebar, showSidebar, open, setOpen }) => {
                   </Tooltip>
                 </MenuButton>
                 <Menu slots={{ listbox: StyledListbox }}>
-                  {tasks.slice(0, 5).map((task, index) => (
+                  {tasks.slice(0, 5).map((task: Task, index: number) => (
                     <React.Fragment key={index}>
                       <StyledMenuItem className="text-gray-600 flex">
                         <div>

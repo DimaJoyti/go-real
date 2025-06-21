@@ -1,13 +1,10 @@
-import React, { useState } from "react";
-import { Drawer, TextField, Autocomplete } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { filterProject } from "../../../redux/action/project";
-import { PiFunnelLight, PiXLight } from "react-icons/pi";
-import { pakistanCities } from "../../../constant";
-import { DatePicker, DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { Autocomplete, Drawer, TextField } from "@mui/material";
+import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { filterSociety } from "../../../redux/action/society";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { useState } from "react";
+import { PiFunnelLight, PiXLight } from "react-icons/pi";
+import { useDispatch } from "react-redux";
 import { filterSocietyReducer } from "../../../redux/reducer/society";
 
 const SocietyFilter = ({ open, setOpen, setIsFiltered }) => {

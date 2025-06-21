@@ -1,49 +1,61 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import {
-  DashBoard,
-  Leads,
-  FollowUps,
-  Tasks,
-  CashBook,
-  Sales,
-  Vouchers,
-  Login,
-  Register,
-  CreateSale,
-  User,
-  Request,
-  Refunds,
-  Employees,
-  Clients,
-  Inventories,
-  Societies,
-  Projects,
-  CreateCashBook,
-  ViewCashBook,
-  Lead,
-  Notifications,
-  Ledger,
-  AllFollowUps,
-  ForgotPassword,
-  InputCode,
-  ResetPassword,
-  Transcript,
-} from "./Pages";
-import { Navbar, Sidebar } from "./Components";
 import { useSelector } from "react-redux";
-import LeadRefunds from "./Pages/Leads/Refund/Refund";
-import VoucherPage from "./Pages/Vouchers/VoucherPage";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Home from "./ClientPanel/Home";
-import TranscriptPage from "./Pages/Transcript/TranscriptPage";
+import { Navbar, Sidebar } from "./Components";
+import {
+    AllFollowUps,
+    CashBook,
+    Clients,
+    CreateCashBook,
+    CreateSale,
+    DashBoard,
+    Employees,
+    FollowUps,
+    ForgotPassword,
+    InputCode,
+    Inventories,
+    Lead,
+    Leads,
+    Ledger,
+    Login,
+    Notifications,
+    Projects,
+    Refunds,
+    Register,
+    Request,
+    ResetPassword,
+    Sales,
+    Societies,
+    Tasks,
+    Transcript,
+    User,
+    ViewCashBook,
+    Vouchers,
+} from "./Pages";
+import LeadRefunds from "./Pages/Leads/Refund/Refund";
 import TestFeatures from "./Pages/TestFeatures";
+import TranscriptPage from "./Pages/Transcript/TranscriptPage";
+import VoucherPage from "./Pages/Vouchers/VoucherPage";
 
-const App = () => {
+// Types
+interface User {
+  role: string;
+  [key: string]: any;
+}
+
+interface RootState {
+  user: {
+    loggedUser: User | null;
+  };
+}
+
+const App: React.FC = () => {
   ///////////////////////////////////// VARIABLES ////////////////////////////////////////
-  const { loggedUser } = useSelector((state) => state.user);
+  const { loggedUser } = useSelector((state: RootState) => state.user);
   const { pathname } = useLocation();
-  const pathArr = pathname.split("/").filter((item) => item != "");
-  const showSidebarForSettings = !pathArr.includes("/settings");
+  const pathArr = pathname.split("/").filter((item) => item !== "");
+  // const showSidebarForSettings = !pathArr.includes("/settings");
 
   ///////////////////////////////////// STATES ////////////////////////////////////////
   const [showSidebar, setShowSidebar] = useState(true);
@@ -59,24 +71,21 @@ const App = () => {
   return (
     <div>
       <div className="flex flex-col w-full h-screen bg-[#f6f9fa]">
-        {console.log('🔍 App Debug:', { loggedUser, role: loggedUser?.role })}
         {!loggedUser ? (
           <div className={`flex justify-center items-center w-full `}>
-            {console.log('🚫 User not logged in - showing auth routes')}
             <Routes>
-              <Route exact path="/auth/register" element={<Register />} />
-              <Route exact path="/auth/login" element={<Login />} />
-              <Route exact path="/auth/forgot_password" element={<ForgotPassword />} />
-              <Route exact path="/auth/newpassword" element={<ResetPassword />} />
-              <Route exact path="/auth/forgot_password/enter_code" element={<InputCode />} />
-              <Route exact path="/auth/change_password" element={<Navigate to="/auth/register" />} />
+              <Route path="/auth/register" element={<Register />} />
+              <Route path="/auth/login" element={<Login />} />
+              <Route path="/auth/forgot_password" element={<ForgotPassword />} />
+              <Route path="/auth/newpassword" element={<ResetPassword />} />
+              <Route path="/auth/forgot_password/enter_code" element={<InputCode />} />
+              <Route path="/auth/change_password" element={<Navigate to="/auth/register" />} />
               <Route path="/" element={<Navigate to="/auth/login" />} />
               <Route path="/:anyotherRoutes" element={<Navigate to="/auth/login" />} />
             </Routes>
           </div>
-        ) : loggedUser.role != "client" ? (
+        ) : loggedUser.role !== "client" ? (
           <>
-            {console.log('✅ Admin/Employee user - showing admin routes')}
             <div
             className={`flex h-screen font-primary ${`${pathname.includes("/client/") || pathname.includes("download") ? "hidden" : "visible"}`}`}>
             <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
@@ -90,7 +99,7 @@ const App = () => {
                   <Route path="/auth/register" element={<Navigate to="/" />} />
                   <Route path="/auth/login" element={<Navigate to="/" />} />
                   <Route path="/myLeads" element={<Leads />} />
-                  <Route path="/leads" exact element={<Leads />} />
+                  <Route path="/leads" element={<Leads />} />
                   <Route path="/leads/call-reminders" element={<AllFollowUps />} />
                   <Route path="/leads/ledger" element={<Navigate to="/leads" />} />
                   <Route path="/leads/ledger/:leadId" element={<Ledger />} />
@@ -104,12 +113,7 @@ const App = () => {
                   <Route path="/inventories" element={<Inventories />} />
                   <Route path="/societies" element={<Societies />} />
                   <Route path="/projects" element={<Projects />} />
-                  <Route path="/clients" element={
-                    <>
-                      {console.log('🎯 /clients route is being rendered!')}
-                      <Clients />
-                    </>
-                  } />
+                  <Route path="/clients" element={<Clients />} />
                   <Route path="/users/:userId" element={<User />} />
                   <Route path="/authorization/request" element={<Request />} />
                   <Route path="/authorization/refund" element={<Refunds />} />
@@ -130,7 +134,6 @@ const App = () => {
           </>
         ) : (
           <>
-            {console.log('👤 Client user - showing client routes')}
             <Routes>
               <Route path="/" element={<Home />} />
             </Routes>

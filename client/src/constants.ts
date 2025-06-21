@@ -1,8 +1,11 @@
-export const baseURL = 'http://localhost:4000/api/v1'
-// export const baseURL = 'https://growmarketing.glitch.me/api/v1'
-export const rootURL = 'http://localhost:4000'
-// export const rootURL = 'https://growmarketing.glitch.me'
-export const pakistanCities = [
+// API Configuration
+export const baseURL: string = 'http://localhost:4000/api/v1'
+// export const baseURL: string = 'https://growmarketing.glitch.me/api/v1'
+export const rootURL: string = 'http://localhost:4000'
+// export const rootURL: string = 'https://growmarketing.glitch.me'
+
+// Pakistan Cities List
+export const pakistanCities: readonly string[] = [
   "Abbottabad",
   "Adilpur",
   "Ahmadpur East",
@@ -429,8 +432,16 @@ export const pakistanCities = [
   "Zaida",
   "Zhob",
   "Ziarat",
-];
-export const countries = [ 
+] as const;
+
+// Country Interface
+export interface Country {
+  name: string;
+  code: string;
+}
+
+// Countries List
+export const countries: readonly Country[] = [
   {name: 'Afghanistan', code: 'AF'}, 
   {name: 'Åland Islands', code: 'AX'}, 
   {name: 'Albania', code: 'AL'}, 
