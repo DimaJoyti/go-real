@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { CommandPalette } from '@/components/ui/command-palette'
 import { usePathname } from 'next/navigation'
-import { Sidebar } from './sidebar'
+import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Navbar } from './navbar'
+import { Sidebar } from './sidebar'
 
 interface User {
   role: string
@@ -24,6 +25,7 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
   const { loggedUser } = useSelector((state: RootState) => state.user)
   const pathname = usePathname()
 
@@ -48,6 +50,19 @@ export function MainLayout({ children }: MainLayoutProps) {
       setSidebarOpen(false)
     }
   }, [pathname])
+
+  // Command palette keyboard shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setCommandPaletteOpen(true)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   // Don't show layout for auth pages or client pages
   const isAuthPage = pathname.startsWith('/auth') || pathname.startsWith('/login') || pathname.startsWith('/register')
@@ -89,30 +104,42 @@ export function MainLayout({ children }: MainLayoutProps) {
   }
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-background gradient-mesh relative overflow-hidden">
+      {/* Floating background elements */}
+      <div className="absolute top-20 left-20 w-32 h-32 gradient-aurora rounded-full opacity-10 animate-float blur-xl" />
+      <div className="absolute top-40 right-32 w-24 h-24 gradient-sunset rounded-full opacity-10 animate-float floating-delayed blur-xl" />
+      <div className="absolute bottom-32 left-40 w-28 h-28 gradient-cosmic rounded-full opacity-10 animate-float blur-xl" />
+      <div className="absolute bottom-20 right-20 w-20 h-20 gradient-royal rounded-full opacity-10 animate-float floating-delayed blur-xl" />
+
       {/* Sidebar */}
-      <Sidebar 
-        isOpen={sidebarOpen} 
+      <Sidebar
+        isOpen={sidebarOpen}
         setIsOpen={setSidebarOpen}
         userRole={loggedUser?.role}
       />
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden relative">
         {/* Navbar */}
-        <Navbar 
+        <Navbar
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
           title={getPageTitle(pathname)}
         />
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto bg-muted/10">
-          <div className="container mx-auto p-6 max-w-7xl">
+        <main className="flex-1 overflow-y-auto bg-background/30 backdrop-blur-md relative">
+          <div className="container mx-auto p-8 max-w-7xl animate-fade-in">
             {children}
           </div>
         </main>
       </div>
+
+      {/* Command Palette */}
+      <CommandPalette
+        isOpen={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+      />
     </div>
   )
 }

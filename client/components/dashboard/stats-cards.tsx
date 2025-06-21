@@ -1,20 +1,19 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  DollarSign, 
-  Users, 
-  Home, 
-  Target,
-  Calendar,
-  Phone,
-  Mail,
-  CheckCircle
-} from 'lucide-react'
 import { cn } from '@/lib/utils'
+import {
+    Calendar,
+    CheckCircle,
+    DollarSign,
+    Home,
+    Mail,
+    Phone,
+    Target,
+    TrendingDown,
+    TrendingUp,
+    Users
+} from 'lucide-react'
 
 interface StatCardProps {
   title: string
@@ -31,46 +30,87 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, icon, color = 'blue', description }: StatCardProps) {
   const colorClasses = {
-    blue: 'text-blue-600 bg-blue-50',
-    green: 'text-green-600 bg-green-50',
-    orange: 'text-orange-600 bg-orange-50',
-    red: 'text-red-600 bg-red-50',
-    purple: 'text-purple-600 bg-purple-50'
+    blue: 'text-primary bg-primary/10 border-primary/20',
+    green: 'text-success bg-success/10 border-success/20',
+    orange: 'text-warning bg-warning/10 border-warning/20',
+    red: 'text-destructive bg-destructive/10 border-destructive/20',
+    purple: 'text-secondary bg-secondary/10 border-secondary/20'
+  }
+
+  const gradientClasses = {
+    blue: 'from-primary/5 to-primary/10',
+    green: 'from-success/5 to-success/10',
+    orange: 'from-warning/5 to-warning/10',
+    red: 'from-destructive/5 to-destructive/10',
+    purple: 'from-secondary/5 to-secondary/10'
   }
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+    <Card className="group morphing-card hover-glow animate-fade-in relative overflow-hidden sparkle">
+      {/* Animated background gradient */}
+      <div className={cn(
+        "absolute inset-0 bg-gradient-to-br opacity-30 transition-all duration-500 group-hover:opacity-60",
+        gradientClasses[color]
+      )} />
+
+      {/* Floating orbs */}
+      <div className="absolute top-4 right-4 w-8 h-8 bg-white/10 rounded-full animate-float" />
+      <div className="absolute bottom-4 left-4 w-6 h-6 bg-white/5 rounded-full animate-float floating-delayed" />
+
+      <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-3">
+        <CardTitle className="text-sm font-bold text-muted-foreground tracking-wide uppercase">
           {title}
         </CardTitle>
-        <div className={cn("p-2 rounded-lg", colorClasses[color])}>
+        <div className={cn(
+          "p-4 rounded-2xl border backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12 animate-breathe",
+          colorClasses[color]
+        )}>
           {icon}
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+
+      <CardContent className="relative space-y-4">
+        <div className="text-4xl font-black text-gradient-aurora tracking-tight">{value}</div>
         {description && (
-          <p className="text-xs text-muted-foreground mt-1">{description}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed font-medium">{description}</p>
         )}
         {change && (
-          <div className="flex items-center mt-2">
-            {change.type === 'increase' ? (
-              <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
-            ) : (
-              <TrendingDown className="h-4 w-4 text-red-600 mr-1" />
-            )}
-            <span className={cn(
-              "text-xs font-medium",
-              change.type === 'increase' ? 'text-green-600' : 'text-red-600'
+          <div className="flex items-center justify-between">
+            <div className={cn(
+              "flex items-center px-3 py-2 rounded-xl text-xs font-bold shadow-lg transition-all duration-300 hover:scale-105",
+              change.type === 'increase'
+                ? 'bg-success/20 text-success border border-success/30 hover:bg-success/30'
+                : 'bg-destructive/20 text-destructive border border-destructive/30 hover:bg-destructive/30'
             )}>
+              {change.type === 'increase' ? (
+                <TrendingUp className="h-4 w-4 mr-2 animate-bounce" />
+              ) : (
+                <TrendingDown className="h-4 w-4 mr-2 animate-bounce" />
+              )}
               {change.value > 0 ? '+' : ''}{change.value}%
-            </span>
-            <span className="text-xs text-muted-foreground ml-1">
-              from {change.period}
+            </div>
+            <span className="text-xs text-muted-foreground font-medium">
+              vs {change.period}
             </span>
           </div>
         )}
+
+        {/* Progress bar */}
+        <div className="w-full bg-muted/30 rounded-full h-1.5 overflow-hidden">
+          <div
+            className={cn(
+              "h-full rounded-full transition-all duration-1000 ease-out",
+              color === 'green' && 'bg-success',
+              color === 'blue' && 'bg-primary',
+              color === 'purple' && 'bg-secondary',
+              color === 'orange' && 'bg-warning'
+            )}
+            style={{
+              width: `${Math.min(Math.abs(change?.value || 50), 100)}%`,
+              animationDelay: '0.5s'
+            }}
+          />
+        </div>
       </CardContent>
     </Card>
   )
