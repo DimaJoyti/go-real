@@ -25,22 +25,16 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "./src/*"
+        "./*"
       ],
       "@/components/*": [
-        "./src/components/*"
+        "./components/*"
       ],
       "@/lib/*": [
-        "./src/lib/*"
+        "./lib/*"
       ],
-      "@/hooks/*": [
-        "./src/hooks/*"
-      ],
-      "@/types/*": [
-        "./src/types/*"
-      ],
-      "@/utils/*": [
-        "./src/utils/*"
+      "@/app/*": [
+        "./app/*"
       ]
     }
   },
@@ -51,6 +45,8 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/**/*",
+    "vite.config.js"
   ]
 }

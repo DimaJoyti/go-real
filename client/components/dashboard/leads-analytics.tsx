@@ -1,23 +1,23 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend
-} from 'recharts'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Users } from 'lucide-react'
 import { useState } from 'react'
-import { Users, TrendingUp, Filter, Eye } from 'lucide-react'
+import {
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Legend,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis
+} from 'recharts'
 
 const leadsByStatus = [
   { name: 'New', count: 145, color: '#3b82f6' },
@@ -120,11 +120,12 @@ export function LeadsAnalytics() {
     }
 
     if (view === 'priority') {
+      const priorityData = data as typeof leadsByPriority
       return (
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie
-              data={data}
+              data={priorityData}
               cx="50%"
               cy="50%"
               outerRadius={100}
@@ -132,7 +133,7 @@ export function LeadsAnalytics() {
               dataKey="count"
               label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
             >
-              {data.map((entry, index) => (
+              {priorityData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
