@@ -4,6 +4,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -21,8 +22,7 @@ type Config struct {
 	SupabaseSecretKey string
 
 	// JWT configuration
-	JWTSecret     string
-	JWTExpiration int
+	JWT JWTConfig
 
 	// Ethereum configuration
 	EthereumNetwork    string
@@ -48,6 +48,14 @@ type Config struct {
 	IPFSGateway string
 	PinataAPIKey string
 	PinataSecret string
+}
+
+// JWTConfig holds JWT configuration
+type JWTConfig struct {
+	AccessSecret         string
+	RefreshSecret        string
+	AccessTokenExpiry    time.Duration
+	RefreshTokenExpiry   time.Duration
 }
 
 // CORSConfig holds CORS configuration
@@ -77,8 +85,12 @@ func Load() (*Config, error) {
 		SupabaseSecretKey: getEnv("SUPABASE_SERVICE_ROLE_KEY", ""),
 
 		// JWT
-		JWTSecret:     getEnv("JWT_SECRET", "your-secret-key"),
-		JWTExpiration: getEnvAsInt("JWT_EXPIRATION_HOURS", 24),
+		JWT: JWTConfig{
+			AccessSecret:       getEnv("JWT_ACCESS_SECRET", "your-access-secret-key"),
+			RefreshSecret:      getEnv("JWT_REFRESH_SECRET", "your-refresh-secret-key"),
+			AccessTokenExpiry:  time.Duration(getEnvAsInt("JWT_ACCESS_EXPIRY_MINUTES", 15)) * time.Minute,
+			RefreshTokenExpiry: time.Duration(getEnvAsInt("JWT_REFRESH_EXPIRY_DAYS", 7)) * 24 * time.Hour,
+		},
 
 		// Ethereum
 		EthereumNetwork: getEnv("ETHEREUM_NETWORK", "sepolia"),

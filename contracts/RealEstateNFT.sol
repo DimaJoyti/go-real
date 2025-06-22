@@ -7,12 +7,14 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol";
+import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 
 /**
  * @title RealEstateNFT
  * @dev NFT contract for tokenizing real estate properties with fractional ownership
  */
-contract RealEstateNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable, ReentrancyGuard {
+contract RealEstateNFT is ERC721, ERC721URIStorage, ERC721Burnable, ERC721Votes, Ownable, ReentrancyGuard {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
@@ -49,6 +51,31 @@ contract RealEstateNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable, Ree
     // Mapping from user to their owned shares per token
     mapping(address => mapping(uint256 => uint256)) public userShares;
 
+    // Integration contracts
+    address public yieldDistributionContract;
+    address public stakingContract;
+    address public governanceContract;
+
+    // Property verification and compliance
+    mapping(uint256 => bool) public isPropertyVerified;
+    mapping(uint256 => string) public propertyDocuments; // IPFS hash for legal documents
+    mapping(uint256 => uint256) public propertyValuation; // Latest valuation timestamp
+
+    // Enhanced property metadata
+    struct PropertyMetadata {
+        string location; // Detailed location info
+        uint256 squareFootage;
+        uint256 yearBuilt;
+        string amenities; // JSON string of amenities
+        string images; // IPFS hash for property images
+        string virtualTour; // URL for virtual tour
+        bool hasInsurance;
+        uint256 insuranceValue;
+        string legalStatus; // "clear", "pending", "disputed"
+    }
+
+    mapping(uint256 => PropertyMetadata) public propertyMetadata;
+
     // Events
     event PropertyMinted(
         uint256 indexed tokenId,
@@ -78,7 +105,25 @@ contract RealEstateNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable, Ree
         uint256 amount
     );
 
-    constructor() ERC721("Challenz Real Estate", "CRE") {}
+    event PropertyVerified(
+        uint256 indexed tokenId,
+        address indexed verifier,
+        string documentsHash
+    );
+
+    event PropertyValuationUpdated(
+        uint256 indexed tokenId,
+        uint256 newValuation,
+        uint256 timestamp
+    );
+
+    event IntegrationContractUpdated(
+        string contractType,
+        address oldContract,
+        address newContract
+    );
+
+    constructor() ERC721("Challenz Real Estate", "CRE") EIP712("RealEstateNFT", "1") {}
 
     /**
      * @dev Mint a new real estate NFT
@@ -268,6 +313,135 @@ contract RealEstateNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable, Ree
         require(_exists(tokenId), "Token does not exist");
         return properties[tokenId].tokenSupply - totalSharesIssued[tokenId];
     }
+
+    /**
+     * @dev Set integration contract addresses
+     */
+    function setIntegrationContract(string memory contractType, address contractAddress) public onlyOwner {
+        address oldContract;
+
+        if (keccak256(bytes(contractType)) == keccak256(bytes("yield"))) {
+            oldContract = yieldDistributionContract;
+            yieldDistributionContract = contractAddress;
+        } else if (keccak256(bytes(contractType)) == keccak256(bytes("staking"))) {
+            oldContract = stakingContract;
+            stakingContract = contractAddress;
+        } else if (keccak256(bytes(contractType)) == keccak256(bytes("governance"))) {
+            oldContract = governanceContract;
+            governanceContract = contractAddress;
+        } else {
+            revert("Invalid contract type");
+        }
+
+        emit IntegrationContractUpdated(contractType, oldContract, contractAddress);
+    }
+
+    /**
+     * @dev Verify property with legal documents
+     */
+    function verifyProperty(
+        uint256 tokenId,
+        string memory documentsHash,
+        PropertyMetadata memory metadata
+    ) public {
+        require(_exists(tokenId), "Token does not exist");
+        require(
+            ownerOf(tokenId) == msg.sender || msg.sender == owner(),
+            "Only property owner or contract owner can verify"
+        );
+
+        isPropertyVerified[tokenId] = true;
+        propertyDocuments[tokenId] = documentsHash;
+        propertyMetadata[tokenId] = metadata;
+        propertyValuation[tokenId] = block.timestamp;
+
+        emit PropertyVerified(tokenId, msg.sender, documentsHash);
+    }
+
+    /**
+     * @dev Update property valuation
+     */
+    function updatePropertyValuation(uint256 tokenId, uint256 newValuation) public {
+        require(_exists(tokenId), "Token does not exist");
+        require(
+            ownerOf(tokenId) == msg.sender || msg.sender == owner(),
+            "Only property owner or contract owner can update valuation"
+        );
+
+        properties[tokenId].totalValue = newValuation;
+        propertyValuation[tokenId] = block.timestamp;
+
+        emit PropertyValuationUpdated(tokenId, newValuation, block.timestamp);
+    }
+
+    /**
+     * @dev Get property metadata
+     */
+    function getPropertyMetadata(uint256 tokenId) public view returns (PropertyMetadata memory) {
+        require(_exists(tokenId), "Token does not exist");
+        return propertyMetadata[tokenId];
+    }
+
+    /**
+     * @dev Check if property is verified
+     */
+    function isVerified(uint256 tokenId) public view returns (bool) {
+        return isPropertyVerified[tokenId];
+    }
+
+    /**
+     * @dev Get property documents hash
+     */
+    function getPropertyDocuments(uint256 tokenId) public view returns (string memory) {
+        require(_exists(tokenId), "Token does not exist");
+        return propertyDocuments[tokenId];
+    }
+
+    /**
+     * @dev Update shares and notify integration contracts
+     */
+    function _updateShares(address from, address to, uint256 tokenId, uint256 shares) internal {
+        // Update yield distribution contract if set
+        if (yieldDistributionContract != address(0)) {
+            try IYieldDistribution(yieldDistributionContract).updateUserYieldDebt(from, tokenId) {} catch {}
+            try IYieldDistribution(yieldDistributionContract).updateUserYieldDebt(to, tokenId) {} catch {}
+        }
+    }
+
+    // Override functions for multiple inheritance
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override(ERC721, ERC721Votes) {
+        super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    function _afterTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override(ERC721, ERC721Votes) {
+        super._afterTokenTransfer(from, to, tokenId);
+    }
+
+    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage, ERC721Votes) {
+        super._burn(tokenId);
+    }
+
+    function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+        return super.tokenURI(tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721URIStorage) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
+}
+
+// Interface for yield distribution contract
+interface IYieldDistribution {
+    function updateUserYieldDebt(address user, uint256 tokenId) external;
+}
 
     // Override functions required by Solidity
     function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {

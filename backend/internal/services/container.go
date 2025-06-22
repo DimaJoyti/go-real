@@ -2,14 +2,15 @@ package services
 
 import (
 	"goreal-backend/internal/config"
+	"goreal-backend/internal/domain"
 )
 
 // Container holds all service dependencies
 type Container struct {
 	Config *config.Config
-	
+
 	// Services
-	AuthService      AuthService
+	AuthService      domain.AuthService
 	UserService      UserService
 	ChallengeService ChallengeService
 	FilmService      FilmService
@@ -24,7 +25,8 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	}
 
 	// Initialize services
-	container.AuthService = NewAuthService(cfg)
+	// Note: AuthService will be initialized in the main container with proper dependencies
+	// container.AuthService = NewAuthService(cfg, userRepo)
 	container.UserService = NewUserService(cfg)
 	container.ChallengeService = NewChallengeService(cfg)
 	container.FilmService = NewFilmService(cfg)
@@ -32,14 +34,6 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	container.CRMService = NewCRMService(cfg)
 
 	return container, nil
-}
-
-// Service interfaces
-type AuthService interface {
-	Login(email, password string) (*AuthResponse, error)
-	Register(req *RegisterRequest) (*AuthResponse, error)
-	RefreshToken(token string) (*AuthResponse, error)
-	ValidateToken(token string) (*TokenClaims, error)
 }
 
 type UserService interface {

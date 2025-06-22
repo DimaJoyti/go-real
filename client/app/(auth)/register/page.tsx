@@ -1,47 +1,124 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { useEnhancedAuth } from '@/contexts/EnhancedAuthContext'
+import { RegisterFormData, checkPasswordStrength, registerSchema } from '@/lib/validations/auth'
+import { UserRole } from '@/types'
+import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'react-hot-toast'
 
 export default function RegisterPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  })
-  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const { register: registerUser, isLoading, error, clearError, isAuthenticated } = useEnhancedAuth()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }))
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [passwordStrength, setPasswordStrength] = useState<any>(null)
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false)
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard')
+    }
+  }, [isAuthenticated, router])
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    watch,
+    setError: setFormError,
+    clearErrors,
+    setValue,
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+      username: '',
+      full_name: '',
+      role: UserRole.CLIENT,
+      terms: false,
+    },
+  })
+
+  const watchedPassword = watch('password')
+  const watchedUsername = watch('username')
+
+  // Check password strength
+  useEffect(() => {
+    if (watchedPassword) {
+      const strength = checkPasswordStrength(watchedPassword)
+      setPasswordStrength(strength)
+    } else {
+      setPasswordStrength(null)
+    }
+  }, [watchedPassword])
+
+  // Check username availability (debounced)
+  useEffect(() => {
+    if (watchedUsername && watchedUsername.length >= 3) {
+      setIsCheckingUsername(true)
+      const timeoutId = setTimeout(async () => {
+        try {
+          // This would be replaced with actual API call
+          const isAvailable = await checkUsernameAvailability(watchedUsername)
+          if (!isAvailable) {
+            setFormError('username', { message: 'Username is already taken' })
+          } else {
+            clearErrors('username')
+          }
+        } catch (error) {
+          console.error('Username check failed:', error)
+        } finally {
+          setIsCheckingUsername(false)
+        }
+      }, 500)
+
+      return () => clearTimeout(timeoutId)
+    }
+  }, [watchedUsername, setFormError, clearErrors])
+
+  const onSubmit = async (data: RegisterFormData) => {
+    try {
+      clearError()
+      clearErrors()
+
+      // Remove confirmPassword from the data before sending
+      const { confirmPassword, terms, ...registrationData } = data
+
+      await registerUser(registrationData)
+
+      toast.success('Registration successful! Welcome to GoReal!')
+      router.push('/dashboard')
+    } catch (error: any) {
+      // Handle specific error cases
+      if (error.message.includes('Email already exists')) {
+        setFormError('email', { message: 'An account with this email already exists' })
+      } else if (error.message.includes('Username already exists')) {
+        setFormError('username', { message: 'This username is already taken' })
+      } else {
+        toast.error(error.message || 'Registration failed. Please try again.')
+      }
+    }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match')
-      return
-    }
-    
-    setIsLoading(true)
-    
-    // TODO: Implement actual registration logic
-    console.log('Registration attempt:', formData)
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      router.push('/login')
-    }, 1000)
+  // Placeholder function - would be replaced with actual API call
+  const checkUsernameAvailability = async (username: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const unavailableUsernames = ['admin', 'root', 'user', 'test', 'goreal']
+        resolve(!unavailableUsernames.includes(username.toLowerCase()))
+      }, 300)
+    })
   }
 
   return (

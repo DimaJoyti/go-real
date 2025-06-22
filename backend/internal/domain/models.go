@@ -16,7 +16,9 @@ type User struct {
 	Bio          *string    `json:"bio" db:"bio"`
 	WalletAddress *string   `json:"wallet_address" db:"wallet_address"`
 	Role         UserRole   `json:"role" db:"role"`
+	PasswordHash string     `json:"-" db:"password_hash"` // Hidden from JSON
 	IsActive     bool       `json:"is_active" db:"is_active"`
+	LastLoginAt  *time.Time `json:"last_login_at" db:"last_login_at"`
 	CreatedAt    time.Time  `json:"created_at" db:"created_at"`
 	UpdatedAt    time.Time  `json:"updated_at" db:"updated_at"`
 }
@@ -25,9 +27,12 @@ type User struct {
 type UserRole string
 
 const (
-	RoleUser      UserRole = "user"
-	RoleCreator   UserRole = "creator"
-	RoleAdmin     UserRole = "admin"
+	RoleUser       UserRole = "user"
+	RoleCreator    UserRole = "creator"
+	RoleEmployee   UserRole = "employee"
+	RoleManager    UserRole = "manager"
+	RoleClient     UserRole = "client"
+	RoleAdmin      UserRole = "admin"
 	RoleSuperAdmin UserRole = "super_admin"
 )
 

@@ -1,13 +1,77 @@
-// User Types
+// Authentication Types
 export interface User {
   id: string
   email: string
   username: string
+  full_name: string
+  role: UserRole
   avatar_url?: string
   bio?: string
   wallet_address?: string
+  is_active: boolean
+  last_login_at?: string
   created_at: string
   updated_at: string
+}
+
+export enum UserRole {
+  CLIENT = 'client',
+  EMPLOYEE = 'employee',
+  MANAGER = 'manager',
+  ADMIN = 'admin',
+  SUPER_ADMIN = 'super_admin'
+}
+
+export interface AuthResponse {
+  user: User
+  access_token: string
+  refresh_token: string
+  expires_in: number
+}
+
+export interface LoginRequest {
+  email: string
+  password: string
+}
+
+export interface RegisterRequest {
+  email: string
+  password: string
+  username: string
+  full_name: string
+  role?: UserRole
+}
+
+export interface ChangePasswordRequest {
+  old_password: string
+  new_password: string
+}
+
+export interface ResetPasswordRequest {
+  email: string
+}
+
+export interface ConfirmPasswordResetRequest {
+  token: string
+  new_password: string
+}
+
+export interface AuthError {
+  message: string
+  code?: string
+  details?: string
+}
+
+export interface AuthState {
+  user: User | null
+  isAuthenticated: boolean
+  isLoading: boolean
+  error: AuthError | null
+  tokens: {
+    access_token: string | null
+    refresh_token: string | null
+    expires_at: number | null
+  }
 }
 
 // Challenge Types
