@@ -62,6 +62,7 @@ type ClientService interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 	List(ctx context.Context, filters ClientFilters) ([]*Client, error)
 	Count(ctx context.Context, filters ClientFilters) (int, error)
+	VerifyClient(ctx context.Context, id uuid.UUID) error
 	VerifyKYC(ctx context.Context, clientID uuid.UUID, documents []string) error
 	UpdateCreditLimit(ctx context.Context, clientID uuid.UUID, limit float64) error
 	GetClientHistory(ctx context.Context, clientID uuid.UUID) (*ClientHistory, error)

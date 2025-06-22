@@ -9,14 +9,14 @@ import (
 
 // Container holds all HTTP handlers
 type Container struct {
-	AuthHandler        *AuthHandler
-	UserHandler        *UserHandler
-	ClientHandler      *ClientHandler
-	LeadHandler        *LeadHandler
-	SalesHandler       *SalesHandler
-	TaskHandler        *TaskHandler
+	AuthHandler         *AuthChiHandler
+	UserHandler         *UserHandler
+	ClientHandler       *ClientChiHandler
+	LeadHandler         *LeadHandler
+	SalesHandler        *SalesHandler
+	TaskHandler         *TaskChiHandler
 	NotificationHandler *NotificationHandler
-	AnalyticsHandler   *AnalyticsHandler
+	AnalyticsHandler    *AnalyticsHandler
 }
 
 // authServiceAdapter adapts services.AuthService to domain.AuthService
@@ -75,15 +75,13 @@ func NewContainer(
 	notificationService domain.NotificationService,
 	analyticsService domain.AnalyticsService,
 ) *Container {
-	authAdapter := &authServiceAdapter{authService: authService}
-
 	return &Container{
-		AuthHandler:         NewAuthHandler(authAdapter),
+		AuthHandler:         NewAuthChiHandler(authService),
 		UserHandler:         NewUserHandler(userService),
-		ClientHandler:       NewClientHandler(clientService),
+		ClientHandler:       NewClientChiHandler(clientService),
 		LeadHandler:         NewLeadHandler(leadService),
 		SalesHandler:        NewSalesHandler(salesService),
-		TaskHandler:         NewTaskHandler(taskService),
+		TaskHandler:         NewTaskChiHandler(taskService),
 		NotificationHandler: NewNotificationHandler(notificationService),
 		AnalyticsHandler:    NewAnalyticsHandler(analyticsService),
 	}

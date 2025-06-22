@@ -41,10 +41,17 @@ func main() {
 		log.Fatalf("Failed to initialize services: %v", err)
 	}
 
-	// Initialize handlers - only use the UserHandler for now
-	handlerContainer := &handlers.Container{
-		UserHandler: handlers.NewUserHandler(serviceContainer.UserService),
-	}
+	// Initialize handlers
+	handlerContainer := handlers.NewContainer(
+		serviceContainer.AuthService,
+		serviceContainer.UserService,
+		serviceContainer.ClientService,
+		serviceContainer.LeadService,
+		serviceContainer.SalesService,
+		serviceContainer.TaskService,
+		nil, // notificationService - not available in container yet
+		serviceContainer.AnalyticsService,
+	)
 
 	// Setup router
 	r := chi.NewRouter()
@@ -78,17 +85,29 @@ func main() {
 	r.Route("/api", func(r chi.Router) {
 		r.Use(middleware.JSONContentType)
 
-		// User management routes
-		r.Route("/users", handlerContainer.UserHandler.Routes)
+		// Authentication routes (public)
+		r.Route("/auth", handlerContainer.AuthHandler.Routes)
 
-		// TODO: Add other routes when handlers are implemented
-		// - Authentication routes
-		// - Client management routes
-		// - Lead management routes
-		// - Sales management routes
-		// - Task management routes
-		// - Notification routes
-		// - Analytics routes
+		// Protected routes (require authentication)
+		r.Group(func(r chi.Router) {
+			// TODO: Add authentication middleware here
+			// r.Use(middleware.AuthRequired)
+
+			// User management routes
+			r.Route("/users", handlerContainer.UserHandler.Routes)
+
+			// Client management routes
+			r.Route("/clients", handlerContainer.ClientHandler.Routes)
+
+			// Task management routes
+			r.Route("/tasks", handlerContainer.TaskHandler.Routes)
+
+			// TODO: Add other routes when handlers are implemented
+			// - Lead management routes
+			// - Sales management routes
+			// - Notification routes
+			// - Analytics routes
+		})
 	})
 
 	// Create server
