@@ -60,7 +60,7 @@ func (h *TaskHandler) CreateTask(c *gin.Context) {
 	}
 
 	// Get current user from context
-	_, err := middleware.GetUserFromContext(c)
+	_, err := middleware.GetUserFromGinContext(c)
 	if err != nil {
 		span.RecordError(err)
 		c.JSON(http.StatusUnauthorized, gin.H{

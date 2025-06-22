@@ -164,7 +164,7 @@ func (h *AuthHandlerNew) Logout(c *gin.Context) {
 	defer span.End()
 
 	// Get user from context (set by auth middleware)
-	user, err := middleware.GetUserFromContext(c)
+	user, err := middleware.GetUserFromGinContext(c)
 	if err != nil {
 		span.RecordError(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -212,7 +212,7 @@ func (h *AuthHandlerNew) ChangePassword(c *gin.Context) {
 	}
 
 	// Get user from context
-	user, err := middleware.GetUserFromContext(c)
+	user, err := middleware.GetUserFromGinContext(c)
 	if err != nil {
 		span.RecordError(err)
 		c.JSON(http.StatusUnauthorized, gin.H{

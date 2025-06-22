@@ -90,17 +90,30 @@ func main() {
 
 		// Protected routes (require authentication)
 		r.Group(func(r chi.Router) {
-			// TODO: Add authentication middleware here
-			// r.Use(middleware.AuthRequired)
+			// Authentication middleware
+			r.Use(middleware.AuthRequired(serviceContainer.AuthService))
 
 			// User management routes
 			r.Route("/users", handlerContainer.UserHandler.Routes)
 
-			// Client management routes
-			r.Route("/clients", handlerContainer.ClientHandler.Routes)
+			// Client management routes (require employee+ role)
+			r.Group(func(r chi.Router) {
+				r.Use(middleware.EmployeeOrAbove())
+				r.Route("/clients", handlerContainer.ClientHandler.Routes)
+			})
 
 			// Task management routes
 			r.Route("/tasks", handlerContainer.TaskHandler.Routes)
+
+			// Admin-only routes
+			r.Group(func(r chi.Router) {
+				r.Use(middleware.AdminOnly())
+
+				// TODO: Add admin-only routes
+				// - System configuration
+				// - User role management
+				// - System analytics
+			})
 
 			// TODO: Add other routes when handlers are implemented
 			// - Lead management routes

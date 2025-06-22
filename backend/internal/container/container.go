@@ -7,7 +7,6 @@ import (
 	"goreal-backend/internal/domain"
 	"goreal-backend/internal/handlers"
 	"goreal-backend/internal/infrastructure/supabase"
-	"goreal-backend/internal/middleware"
 	"goreal-backend/internal/observability"
 	"goreal-backend/internal/services"
 )
@@ -40,9 +39,6 @@ type Container struct {
 	TaskService      domain.TaskService
 	SalesService     domain.SalesService
 	AnalyticsService domain.AnalyticsService
-
-	// Middleware
-	AuthMiddleware *middleware.AuthMiddleware
 
 	// Handlers
 	AuthHandler *handlers.AuthHandlerNew
@@ -95,9 +91,6 @@ func NewContainer() (*Container, error) {
 	// Initialize analytics service
 	analyticsService := services.NewAnalyticsService(leadRepo, clientRepo, saleRepo, nil, taskRepo, userRepo, nil) // inventoryRepo and cashbookRepo will be added when implemented
 
-	// Initialize middleware
-	authMiddleware := middleware.NewAuthMiddleware(cfg, authService)
-
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandlerNew(authService)
 
@@ -120,7 +113,6 @@ func NewContainer() (*Container, error) {
 		TaskService:          taskService,
 		SalesService:         salesService,
 		AnalyticsService:     analyticsService,
-		AuthMiddleware:       authMiddleware,
 		AuthHandler:          authHandler,
 	}, nil
 }
@@ -143,11 +135,6 @@ func (c *Container) Close() error {
 	// For example, database connections, message queues, etc.
 	
 	return nil
-}
-
-// GetAuthMiddleware returns the authentication middleware
-func (c *Container) GetAuthMiddleware() *middleware.AuthMiddleware {
-	return c.AuthMiddleware
 }
 
 // GetAuthHandler returns the authentication handler

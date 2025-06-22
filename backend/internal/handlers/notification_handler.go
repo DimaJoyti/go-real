@@ -48,7 +48,7 @@ func (h *NotificationHandler) GetUserNotifications(c *gin.Context) {
 	defer span.End()
 
 	// Get current user from context
-	user, err := middleware.GetUserFromContext(c)
+	user, err := middleware.GetUserFromGinContext(c)
 	if err != nil {
 		span.RecordError(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -150,7 +150,7 @@ func (h *NotificationHandler) MarkAllAsRead(c *gin.Context) {
 	defer span.End()
 
 	// Get current user from context
-	user, err := middleware.GetUserFromContext(c)
+	user, err := middleware.GetUserFromGinContext(c)
 	if err != nil {
 		span.RecordError(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -181,7 +181,7 @@ func (h *NotificationHandler) GetUnreadCount(c *gin.Context) {
 	defer span.End()
 
 	// Get current user from context
-	user, err := middleware.GetUserFromContext(c)
+	user, err := middleware.GetUserFromGinContext(c)
 	if err != nil {
 		span.RecordError(err)
 		c.JSON(http.StatusUnauthorized, gin.H{

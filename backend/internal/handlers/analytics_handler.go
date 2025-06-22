@@ -48,7 +48,7 @@ func (h *AnalyticsHandler) GetDashboardStats(c *gin.Context) {
 	defer span.End()
 
 	// Get current user from context
-	user, err := middleware.GetUserFromContext(c)
+	user, err := middleware.GetUserFromGinContext(c)
 	if err != nil {
 		span.RecordError(err)
 		c.JSON(http.StatusUnauthorized, gin.H{

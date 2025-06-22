@@ -64,7 +64,7 @@ func (h *SalesHandler) CreateSale(c *gin.Context) {
 	}
 
 	// Get current user from context
-	user, err := middleware.GetUserFromContext(c)
+	user, err := middleware.GetUserFromGinContext(c)
 	if err != nil {
 		span.RecordError(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -306,7 +306,7 @@ func (h *SalesHandler) ApproveSale(c *gin.Context) {
 	}
 
 	// Get current user from context
-	user, err := middleware.GetUserFromContext(c)
+	user, err := middleware.GetUserFromGinContext(c)
 	if err != nil {
 		span.RecordError(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -363,7 +363,7 @@ func (h *SalesHandler) RejectSale(c *gin.Context) {
 	}
 
 	// Get current user from context
-	user, err := middleware.GetUserFromContext(c)
+	user, err := middleware.GetUserFromGinContext(c)
 	if err != nil {
 		span.RecordError(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
