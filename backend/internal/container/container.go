@@ -23,9 +23,14 @@ type Container struct {
 	SupabaseClient *supabase.Client
 
 	// Repositories
-	UserRepository domain.UserRepository
-	LeadRepository domain.LeadRepository
-	// Add other repositories as needed
+	UserRepository         domain.UserRepository
+	LeadRepository         domain.LeadRepository
+	CompanyRepository      domain.CompanyRepository
+	ProjectRepository      domain.ProjectRepository
+	TaskRepository         domain.TaskRepository
+	SaleRepository         domain.SaleRepository
+	ClientRepository       domain.ClientRepository
+	NotificationRepository domain.NotificationRepository
 
 	// Services
 	AuthService domain.AuthService
@@ -58,6 +63,12 @@ func NewContainer() (*Container, error) {
 	// Initialize repositories
 	userRepo := supabase.NewUserRepository(supabaseClient)
 	leadRepo := supabase.NewLeadRepository(supabaseClient)
+	companyRepo := supabase.NewCompanyRepository(supabaseClient)
+	projectRepo := supabase.NewProjectRepository(supabaseClient)
+	taskRepo := supabase.NewTaskRepository(supabaseClient)
+	saleRepo := supabase.NewSaleRepository(supabaseClient)
+	clientRepo := supabase.NewClientRepository(supabaseClient)
+	notificationRepo := supabase.NewNotificationRepository(supabaseClient)
 
 	// Initialize observability
 	obsConfig := observability.DefaultConfig("goreal-backend", "1.0.0", cfg.Environment)
@@ -80,16 +91,22 @@ func NewContainer() (*Container, error) {
 	authHandler := handlers.NewAuthHandlerNew(authService)
 
 	return &Container{
-		Config:         cfg,
-		Observability:  obs,
-		SupabaseClient: supabaseClient,
-		UserRepository: userRepo,
-		LeadRepository: leadRepo,
-		AuthService:    authService,
+		Config:               cfg,
+		Observability:        obs,
+		SupabaseClient:       supabaseClient,
+		UserRepository:       userRepo,
+		LeadRepository:       leadRepo,
+		CompanyRepository:    companyRepo,
+		ProjectRepository:    projectRepo,
+		TaskRepository:       taskRepo,
+		SaleRepository:       saleRepo,
+		ClientRepository:     clientRepo,
+		NotificationRepository: notificationRepo,
+		AuthService:          authService,
 		// UserService:    userService,  // TODO: Implement UserService
-		LeadService:    leadService,
-		AuthMiddleware: authMiddleware,
-		AuthHandler:    authHandler,
+		LeadService:          leadService,
+		AuthMiddleware:       authMiddleware,
+		AuthHandler:          authHandler,
 	}, nil
 }
 
