@@ -33,10 +33,13 @@ type Container struct {
 	NotificationRepository domain.NotificationRepository
 
 	// Services
-	AuthService domain.AuthService
-	UserService domain.UserService
-	LeadService domain.LeadService
-	// Add other services as needed
+	AuthService      domain.AuthService
+	UserService      domain.UserService
+	LeadService      domain.LeadService
+	ClientService    domain.ClientService
+	TaskService      domain.TaskService
+	SalesService     domain.SalesService
+	AnalyticsService domain.AnalyticsService
 
 	// Middleware
 	AuthMiddleware *middleware.AuthMiddleware
@@ -79,10 +82,18 @@ func NewContainer() (*Container, error) {
 
 	// Initialize services
 	authService := services.NewAuthService(cfg, userRepo)
-	// userService := services.NewUserService(cfg)  // TODO: Implement UserService
+	userService := services.NewUserService(cfg, userRepo)
 	notificationService := services.NewNotificationService(cfg)
 
-	leadService := services.NewLeadService(cfg, leadRepo, nil, userRepo, nil, nil, notificationService)
+	// Initialize core business services
+	clientService := services.NewClientService(cfg, clientRepo, userRepo, companyRepo, leadRepo, notificationService)
+	taskService := services.NewTaskService(cfg, taskRepo, userRepo, notificationService)
+	salesService := services.NewSalesService(cfg, saleRepo, clientRepo, nil, userRepo, notificationService) // inventoryRepo will be added when implemented
+
+	leadService := services.NewLeadService(cfg, leadRepo, clientRepo, userRepo, taskRepo, nil, notificationService) // followUpRepo will be added when implemented
+
+	// Initialize analytics service
+	analyticsService := services.NewAnalyticsService(leadRepo, clientRepo, saleRepo, nil, taskRepo, userRepo, nil) // inventoryRepo and cashbookRepo will be added when implemented
 
 	// Initialize middleware
 	authMiddleware := middleware.NewAuthMiddleware(cfg, authService)
@@ -103,8 +114,12 @@ func NewContainer() (*Container, error) {
 		ClientRepository:     clientRepo,
 		NotificationRepository: notificationRepo,
 		AuthService:          authService,
-		// UserService:    userService,  // TODO: Implement UserService
+		UserService:          userService,
 		LeadService:          leadService,
+		ClientService:        clientService,
+		TaskService:          taskService,
+		SalesService:         salesService,
+		AnalyticsService:     analyticsService,
 		AuthMiddleware:       authMiddleware,
 		AuthHandler:          authHandler,
 	}, nil

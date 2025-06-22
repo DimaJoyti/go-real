@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"goreal-backend/internal/config"
+	"goreal-backend/internal/container"
 	"goreal-backend/internal/handlers"
 	"goreal-backend/internal/middleware"
-	"goreal-backend/internal/services"
 	"goreal-backend/pkg/observability"
 
 	"github.com/go-chi/chi/v5"
@@ -36,13 +36,15 @@ func main() {
 	defer shutdown()
 
 	// Initialize services
-	serviceContainer, err := services.NewContainer(cfg)
+	serviceContainer, err := container.NewContainer()
 	if err != nil {
 		log.Fatalf("Failed to initialize services: %v", err)
 	}
 
-	// Initialize handlers
-	handlerContainer := handlers.NewContainer(serviceContainer)
+	// Initialize handlers - only use the UserHandler for now
+	handlerContainer := &handlers.Container{
+		UserHandler: handlers.NewUserHandler(serviceContainer.UserService),
+	}
 
 	// Setup router
 	r := chi.NewRouter()
@@ -75,24 +77,18 @@ func main() {
 	// API routes
 	r.Route("/api", func(r chi.Router) {
 		r.Use(middleware.JSONContentType)
-		
-		// Authentication routes
-		r.Route("/auth", handlerContainer.AuthHandler.Routes)
-		
+
 		// User management routes
 		r.Route("/users", handlerContainer.UserHandler.Routes)
-		
-		// Challenge routes
-		r.Route("/challenges", handlerContainer.ChallengeHandler.Routes)
-		
-		// Film routes
-		r.Route("/films", handlerContainer.FilmHandler.Routes)
-		
-		// NFT/Property routes
-		r.Route("/properties", handlerContainer.PropertyHandler.Routes)
-		
-		// Real estate CRM routes
-		r.Route("/crm", handlerContainer.CRMHandler.Routes)
+
+		// TODO: Add other routes when handlers are implemented
+		// - Authentication routes
+		// - Client management routes
+		// - Lead management routes
+		// - Sales management routes
+		// - Task management routes
+		// - Notification routes
+		// - Analytics routes
 	})
 
 	// Create server

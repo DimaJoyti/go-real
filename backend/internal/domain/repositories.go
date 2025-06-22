@@ -44,6 +44,7 @@ type ClientRepository interface {
 	List(ctx context.Context, filters ClientFilters) ([]*Client, error)
 	Count(ctx context.Context, filters ClientFilters) (int, error)
 	GetByAssignedUser(ctx context.Context, userID uuid.UUID) ([]*Client, error)
+	UpdateVerificationStatus(ctx context.Context, id uuid.UUID, isVerified bool) error
 }
 
 // CompanyRepository defines the interface for company data operations
@@ -102,6 +103,7 @@ type SaleRepository interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 	List(ctx context.Context, filters SaleFilters) ([]*Sale, error)
 	Count(ctx context.Context, filters SaleFilters) (int, error)
+	UpdateStatus(ctx context.Context, id uuid.UUID, status SaleStatus) error
 	GetSalesStats(ctx context.Context, filters SaleFilters) (*SalesStats, error)
 }
 

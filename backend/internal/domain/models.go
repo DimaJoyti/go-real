@@ -194,8 +194,15 @@ type Notification struct {
 type NotificationType string
 
 const (
-	NotificationTypeChallenge NotificationType = "challenge"
-	NotificationTypeFilm      NotificationType = "film"
-	NotificationTypeProperty  NotificationType = "property"
-	NotificationTypeSystem    NotificationType = "system"
+	NotificationTypeChallenge           NotificationType = "challenge"
+	NotificationTypeFilm                NotificationType = "film"
+	NotificationTypeProperty            NotificationType = "property"
+	NotificationTypeSystem              NotificationType = "system"
+	NotificationTypeTaskAssigned        NotificationType = "task_assigned"
+	NotificationTypeTaskStatusChanged   NotificationType = "task_status_changed"
+	NotificationTypeClientAssigned      NotificationType = "client_assigned"
+	NotificationTypeClientVerified      NotificationType = "client_verified"
+	NotificationTypeSaleCreated         NotificationType = "sale_created"
+	NotificationTypeSaleStatusChanged   NotificationType = "sale_status_changed"
+	NotificationTypeProjectStatusChanged NotificationType = "project_status_changed"
 )

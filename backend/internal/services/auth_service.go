@@ -16,6 +16,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// TokenClaims represents JWT token claims
+type TokenClaims struct {
+	UserID string `json:"user_id"`
+	Email  string `json:"email"`
+	Role   string `json:"role"`
+}
+
 var authTracer = otel.Tracer("goreal-backend/services/auth")
 
 type authService struct {

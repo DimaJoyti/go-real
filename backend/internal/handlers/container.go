@@ -3,19 +3,20 @@ package handlers
 import (
 	"context"
 	"goreal-backend/internal/domain"
-	"goreal-backend/internal/services"
 
 	"github.com/google/uuid"
 )
 
 // Container holds all HTTP handlers
 type Container struct {
-	AuthHandler      *AuthHandler
-	UserHandler      *UserHandler
-	ChallengeHandler *ChallengeHandler
-	FilmHandler      *FilmHandler
-	PropertyHandler  *PropertyHandler
-	CRMHandler       *CRMHandler
+	AuthHandler        *AuthHandler
+	UserHandler        *UserHandler
+	ClientHandler      *ClientHandler
+	LeadHandler        *LeadHandler
+	SalesHandler       *SalesHandler
+	TaskHandler        *TaskHandler
+	NotificationHandler *NotificationHandler
+	AnalyticsHandler   *AnalyticsHandler
 }
 
 // authServiceAdapter adapts services.AuthService to domain.AuthService
@@ -64,15 +65,26 @@ func (a *authServiceAdapter) ConfirmPasswordReset(ctx context.Context, token, ne
 }
 
 // NewContainer creates a new handler container
-func NewContainer(services *services.Container) *Container {
-	authAdapter := &authServiceAdapter{authService: services.AuthService}
+func NewContainer(
+	authService domain.AuthService,
+	userService domain.UserService,
+	clientService domain.ClientService,
+	leadService domain.LeadService,
+	salesService domain.SalesService,
+	taskService domain.TaskService,
+	notificationService domain.NotificationService,
+	analyticsService domain.AnalyticsService,
+) *Container {
+	authAdapter := &authServiceAdapter{authService: authService}
 
 	return &Container{
-		AuthHandler:      NewAuthHandler(authAdapter),
-		UserHandler:      NewUserHandler(services.UserService),
-		ChallengeHandler: NewChallengeHandler(services.ChallengeService),
-		FilmHandler:      NewFilmHandler(services.FilmService),
-		PropertyHandler:  NewPropertyHandler(services.PropertyService),
-		CRMHandler:       NewCRMHandler(services.CRMService),
+		AuthHandler:         NewAuthHandler(authAdapter),
+		UserHandler:         NewUserHandler(userService),
+		ClientHandler:       NewClientHandler(clientService),
+		LeadHandler:         NewLeadHandler(leadService),
+		SalesHandler:        NewSalesHandler(salesService),
+		TaskHandler:         NewTaskHandler(taskService),
+		NotificationHandler: NewNotificationHandler(notificationService),
+		AnalyticsHandler:    NewAnalyticsHandler(analyticsService),
 	}
 }
